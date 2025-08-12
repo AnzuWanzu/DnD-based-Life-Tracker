@@ -2,6 +2,11 @@
   "type": "module",
   "dependencies": {
     "dotenv": "^17.2.1",
-    "groq-sdk": "^0.30.0"
+    "express": "^5.1.0",
+    "flask": "^0.2.10",
+    "groq-sdk": "^0.30.0",
+    "jsonify": "^0.0.1",
+    "os": "^0.1.2",
+    "request": "^2.88.2"
   }
 }

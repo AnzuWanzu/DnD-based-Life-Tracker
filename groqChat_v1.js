@@ -1,18 +1,14 @@
-import Groq from "groq-sdk";
+import express from 'express';
+import Groq from 'groq-sdk';
 import 'dotenv/config';
+
+const app = express();
+const port = 3000;
+
 const groq = new Groq({apiKey: process.env.GROQ_API_KEY});
 
-export const main = async () =>{
-    const stream = await getGroqChatCompletion();
-    // console.log(chatCompletion.choices[0]?.message?.content || ""
-    // );
-    for await (const chunk of stream) {
-    process.stdout.write(chunk.choices[0]?.delta?.content || "");
-  }
-}
-
 export const getGroqChatCompletion = async () => {
-    return groq.chat.completions.create({
+    return await groq.chat.completions.create({
         messages: [
             {
             role: "system",
@@ -28,8 +24,25 @@ export const getGroqChatCompletion = async () => {
     max_completion_tokens: 1024,
     top_p: 1,
     stop: null,
-    stream: true,
+    stream: false,
     });
 }
 
-main();
+app.get("/chat",  async (req,res) => {
+    try{
+        const completion = await getGroqChatCompletion();
+        const AIresponse = completion.choices[0]?.message?.content || "No response received.";
+        res.send({response: AIresponse});
+    }catch(error){
+        console.error(error);
+        res.status(500).send({error: "Something went wrong with the process."});
+    }
+});
+
+app.get("/", (req, res) => {
+    res.send("Server is running! Try /chat for the AI response.");
+});
+
+app.listen(port, () => {
+    console.log(`Server Running on http://localhost:${port}`);
+});
